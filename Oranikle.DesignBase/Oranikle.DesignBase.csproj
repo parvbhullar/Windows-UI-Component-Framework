@@ -1,0 +1,539 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5BBC4C3C-65CE-415A-8CDA-C84280124331}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Oranikle.Studio.Controls</RootNamespace>
+    <AssemblyName>Oranikle.DesignBase</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>Svn</SccProjectName>
+    <SccLocalPath>Svn</SccLocalPath>
+    <SccAuxPath>Svn</SccAuxPath>
+    <SccProvider>SubversionScc</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Csla">
+      <HintPath>..\Oranikle.Accy.CommanItems\Csla.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\Oranikle.Accy.CommanItems\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Oranikle.Security">
+      <HintPath>..\Oranikle.Accy.CommanItems\Oranikle.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApplicationFlowException.cs" />
+    <Compile Include="Barcode\BarcodeScannedEventArgs.cs" />
+    <Compile Include="Barcode\BarcodeScannerDeviceInfo.cs" />
+    <Compile Include="Barcode\BarcodeScannerListener.cs" />
+    <Compile Include="Barcode\BarcodeScannerListenerConfigurationElement.cs" />
+    <Compile Include="Barcode\BarcodeScannerListenerConfigurationElementCollection.cs" />
+    <Compile Include="Barcode\BarcodeScannerListenerConfigurationSection.cs" />
+    <Compile Include="Barcode\NativeMethods.cs" />
+    <Compile Include="BaseUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BorderDrawer.cs" />
+    <Compile Include="CaptionOrizontalAlign.cs" />
+    <Compile Include="CaseConversion.cs" />
+    <Compile Include="CaseConversionModes.cs" />
+    <Compile Include="ColorSchemeConstants.cs" />
+    <Compile Include="CtrlCaseConversionTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlCurrency.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlDGVCreditDebitColumn.cs" />
+    <Compile Include="CtrlDGVCurrencyCell.cs" />
+    <Compile Include="CtrlDGVDropdownListCell.cs" />
+    <Compile Include="CtrlDGVDropdownListColumn.cs" />
+    <Compile Include="CtrlDGVTextCell.cs" />
+    <Compile Include="CtrlDGVCurrencyColumn.cs" />
+    <Compile Include="CtrlDGVYesNoColumn.cs" />
+    <Compile Include="CtrlDropDownForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CtrlDropDownForm.Designer.cs">
+      <DependentUpon>CtrlDropDownForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CtrlDropdownHost.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CtrlDropdownHostList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CtrlDropDownListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CtrlDropDownListForm.Designer.cs">
+      <DependentUpon>CtrlDropDownListForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CtrlFormResizer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CtrlLine.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlLineDesigner.cs" />
+    <Compile Include="CtrlLineWithText.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CtrlLinkLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlNullableComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlRichTextbox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CtrlSplitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlStickyNote.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CtrlStyledCheckBoxCell.cs" />
+    <Compile Include="CtrlStyledCheckBoxColumn.cs" />
+    <Compile Include="CtrlStyledListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlStyledMaskedTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlStyledPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlStyledSplitContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlStyledTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlStyledTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlStyledToolStripTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlTabStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlTabStripButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlTabStripRenderer.cs" />
+    <Compile Include="CtrlTextCell.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CtrlTip.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CtrlTip.Designer.cs">
+      <DependentUpon>CtrlTip.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomColors.cs" />
+    <Compile Include="CustomTextControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DataGridViewStyledCheckBoxEditingControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EnumDisplay.cs" />
+    <Compile Include="EnumModules.cs" />
+    <Compile Include="EnumStatusBarStatusType.cs" />
+    <Compile Include="ExtendedDecimalNumberFormatter.cs" />
+    <Compile Include="FormClickedEventArgs.cs" />
+    <Compile Include="FormClickedEventHandler.cs" />
+    <Compile Include="FormWithContent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FunctionalDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GradientPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Interface\IColumnSettingsManager.cs" />
+    <Compile Include="Interface\IControlByOptions.cs" />
+    <Compile Include="Interface\ICustomDeleteFromDGV.cs" />
+    <Compile Include="Interface\ICustomDGVParser.cs" />
+    <Compile Include="Interface\ICustomEnableControl.cs" />
+    <Compile Include="Interface\ICustomResizeForm.cs" />
+    <Compile Include="Interface\IDisplayDataSource.cs" />
+    <Compile Include="Interface\IDisplayDataSourceManager.cs" />
+    <Compile Include="Interface\IDlgSearch.cs" />
+    <Compile Include="Interface\IDropdownDisplayer.cs" />
+    <Compile Include="Interface\IFormWithContent.cs" />
+    <Compile Include="Interface\IFormWithStatusBar.cs" />
+    <Compile Include="Interface\IInitializeClass.cs" />
+    <Compile Include="Interface\IMsysBusinessBase.cs" />
+    <Compile Include="Interface\IObjectWithTimestamp.cs" />
+    <Compile Include="Interface\IResizeToPanel.cs" />
+    <Compile Include="Interface\ISearchDialogCriteria.cs" />
+    <Compile Include="Interface\IStickyControl.cs" />
+    <Compile Include="Interface\ItemBeforeRemoveEventArgs.cs" />
+    <Compile Include="LineVerticalAlign.cs" />
+    <Compile Include="LP.cs" />
+    <Compile Include="ModuleTheme.cs" />
+    <Compile Include="NativeUpDown.cs" />
+    <Compile Include="ObjectCollection.cs" />
+    <Compile Include="OutLookBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OutlookBar.designer.cs">
+      <DependentUpon>OutLookBar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProgressBar\Components\FloatWindowAlphaMaker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProgressBar\Components\IAlphaMaker.cs" />
+    <Compile Include="ProgressBar\DrawDigitalHelper.cs" />
+    <Compile Include="ProgressBar\DropDownProgress.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProgressBar\DropDownProgress.designer.cs">
+      <DependentUpon>DropDownProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProgressBar\ProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProgressBar\IFloatWindowBase.cs" />
+    <Compile Include="ProgressBar\IProgressBar.cs" />
+    <Compile Include="ProgressBar\IProgressColorizer.cs" />
+    <Compile Include="ProgressBar\SpinningProgress.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProgressBar\Win32\Enum.cs" />
+    <Compile Include="ProgressBar\Win32\User32.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ReadOnlyTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RichTextBoxEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SelectedTabChangedEventArgs.cs" />
+    <Compile Include="StickyManager.cs" />
+    <Compile Include="Properties\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="StyledCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="StyledComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="StyledDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="StyledPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="StyledPanel_CornerCurveMode.cs" />
+    <Compile Include="StyledPanel_LinearGradientMode.cs" />
+    <Compile Include="StyledTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Events\WeakDelegate.cs" />
+    <Compile Include="Events\WeakEvent.cs" />
+    <Compile Include="Events\WeakEventHandler.cs" />
+    <Compile Include="Events\Win32.cs" />
+    <Compile Include="Interface\IControlWithBorder.cs" />
+    <Compile Include="Interface\IEndEditToDataBinding.cs" />
+    <Compile Include="Interface\IWeakEventHandler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StyledButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SummaryControlContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TextControlPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TextHelper.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="UtilityLibrary\General\ArrayUtils.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\General\BooleanFlagsMap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\General\ColorUtil.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\General\CommonDragging.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\General\DoubleBuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\General\Enumerations.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\General\GDIUtil.cs" />
+    <Compile Include="UtilityLibrary\General\GDIUtilities.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\General\ResourceUtil.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\General\TextUtil.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\Wizards\LineFrame.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\Wizards\WizardFinalPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\Wizards\WizardForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\Wizards\WizardPageBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UtilityLibrary\Wizards\WizardWPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WeakEvent.cs" />
+    <Compile Include="Win32\Enums.cs" />
+    <Compile Include="Win32\Functions.cs" />
+    <Compile Include="Win32\RegistryUtil.cs" />
+    <Compile Include="Win32\Structs.cs" />
+    <Compile Include="Wizard\Header.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\HeaderDesigner.cs" />
+    <Compile Include="Wizard\InfoContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\InfoContainerDesigner.cs" />
+    <Compile Include="Wizard\InfoPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\InfoPageDesigner.cs" />
+    <Compile Include="Wizard\PageCollection.cs" />
+    <Compile Include="Wizard\PageEventHandler.cs" />
+    <Compile Include="Wizard\Wizard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\WizardDesigner.cs" />
+    <Compile Include="Wizard\WizardFormDesigner.cs" />
+    <Compile Include="Wizard\WizardPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Wizard\WizardPageDesigner.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BaseUserControl.resx">
+      <DependentUpon>BaseUserControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CtrlDropDownForm.resx">
+      <DependentUpon>CtrlDropDownForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CtrlDropdownHost.resx">
+      <DependentUpon>CtrlDropdownHost.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CtrlDropdownHostList.resx">
+      <DependentUpon>CtrlDropdownHostList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CtrlDropDownListForm.resx">
+      <DependentUpon>CtrlDropDownListForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CtrlRichTextbox.resx">
+      <DependentUpon>CtrlRichTextbox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CtrlStickyNote.resx">
+      <DependentUpon>CtrlStickyNote.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CtrlTip.resx">
+      <DependentUpon>CtrlTip.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OutlookBar.resx">
+      <DependentUpon>OutLookBar.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UtilityLibrary\Controls.resX">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UtilityLibrary\Wizards\LineFrame.resx">
+      <DependentUpon>LineFrame.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UtilityLibrary\Wizards\WizardFinalPage.resx">
+      <DependentUpon>WizardFinalPage.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UtilityLibrary\Wizards\WizardForm.resx">
+      <DependentUpon>WizardForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UtilityLibrary\Wizards\WizardPageBase.resx">
+      <DependentUpon>WizardPageBase.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UtilityLibrary\Wizards\WizardWPage.resx">
+      <DependentUpon>WizardWPage.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\Header.resx">
+      <DependentUpon>Header.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\InfoContainer.resx">
+      <DependentUpon>InfoContainer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\InfoPage.resx">
+      <DependentUpon>InfoPage.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\Wizard.resx">
+      <DependentUpon>Wizard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\WizardPage.resx">
+      <DependentUpon>WizardPage.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="UtilityLibrary\Wizards\vssver.scc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\software_wizard_header.png" />
+    <None Include="Resources\software_wizard_header1.png" />
+    <None Include="Resources\Arrow_Down.ico" />
+    <None Include="Resources\Arrow_Up.ico" />
+    <None Include="Resources\DefaultIcon.ico" />
+    <None Include="Resources\DropDown2003.ico" />
+    <None Include="Resources\DropDown2007.ico" />
+    <None Include="Resources\Grip2003.ico" />
+    <None Include="Resources\Grip2007.ico" />
+    <Content Include="navbarnew.txt" />
+    <Content Include="UtilityLibrary\Wizards\LineFrame.bmp" />
+    <Content Include="UtilityLibrary\Wizards\WizardForm.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SkyDesign\" />
+    <Folder Include="Tab\" />
+    <Folder Include="UI\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,910 @@
+using Microsoft.VisualBasic;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.ComponentModel;
+
+
+[DefaultEvent("ButtonClicked")]
+public class OutlookBar : Control
+{
+
+	public OutlookBar()
+	{
+		Paint += OutlookBar_Paint;
+		MouseUp += OutlookBar_MouseUp;
+		MouseMove += OutlookBar_MouseMove;
+		MouseLeave += OutlookBar_MouseLeave;
+		MouseDown += OutlookBar_MouseDown;
+		MouseClick += OutlookBar_MouseClick;
+		this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+		this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+		this.SetStyle(ControlStyles.ResizeRedraw, true);
+		this._Buttons = new OutlookBarButtonCollection(this);
+	}
+
+	public event ButtonClickedEventHandler ButtonClicked;
+	public delegate void ButtonClickedEventHandler(object sender, System.EventArgs e);
+
+	//Needed because this way the buttons can raise the ButtonClicked event...
+	public void SetSelectionChanged(OutlookBarButton button)
+	{
+		this._SelectedButton = button;
+		this.Invalidate();
+		if (ButtonClicked != null) {
+			ButtonClicked(this, new System.EventArgs());
+		}
+	}
+
+	#region " Members... "
+
+	//Private Members...
+	private ToolTip oToolTip = new ToolTip();
+	private ContextMenuStrip oContextMenuStrip;
+	private OutlookBarButtonCollection _Buttons;
+	private Renderer _Renderer = Renderer.Outlook2003;
+	private const int ImageDimension_Large = 24;
+	private const int ImageDimension_Small = 18;
+	private bool _DropDownHovering;
+	private OutlookBarButton _HoveringButton;
+	private OutlookBarButton _LeftClickedButton;
+	private OutlookBarButton _RightClickedButton;
+	internal OutlookBarButton _SelectedButton;
+	private bool IsResizing;
+	private bool CanGrow;
+	private bool CanShrink;
+	private Color _OutlookBarLineColor;
+	private int _ButtonHeight = 35;
+	private Color _ForeColorSelected;
+	private Color _ButtonColorHoveringTop;
+	private Color _ButtonColorSelectedTop;
+	private Color _ButtonColorSelectedAndHoveringTop;
+	private Color _ButtonColorPassiveTop;
+	private Color _ButtonColorHoveringBottom;
+	private Color _ButtonColorSelectedBottom;
+	private Color _ButtonColorSelectedAndHoveringBottom;
+
+	private Color _ButtonColorPassiveBottom;
+	//Public Members...
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Category("Behavior")]
+	public OutlookBarButtonCollection Buttons {
+		get { return this._Buttons; }
+	}
+	[Browsable(false)]
+	public OutlookBarButton SelectedButton {
+		get { return this._SelectedButton; }
+		set {
+			this._SelectedButton = value;
+			this.Invalidate();
+		}
+	}
+	[DefaultValue(typeof(Renderer), "Outlook2003")]
+	[Category("Appearance")]
+	public Renderer Renderer {
+		get { return this._Renderer; }
+		set {
+			this._Renderer = value;
+			this.Invalidate();
+		}
+	}
+	public override System.Drawing.Size MinimumSize {
+		get { return new System.Drawing.Size(this.GetBottomContainerLeftMargin(), this.GetBottomContainerRectangle().Height + GetGripRectangle().Height); }
+			//do nothing...
+		set { }
+	}
+	[Category("Appearance"), DisplayName("LineColor")]
+	public Color OutlookBarLineColor {
+		get { return this._OutlookBarLineColor; }
+		set {
+			this._OutlookBarLineColor = value;
+			this.Invalidate();
+		}
+	}
+	[Category("Appearance")]
+	public int ButtonHeight {
+		get { return this._ButtonHeight; }
+		set {
+			if (value < 5)
+				value = 5;
+			this._ButtonHeight = value;
+			this.Invalidate();
+		}
+	}
+	[DisplayName("ForeColorNotSelected")]
+	public override System.Drawing.Color ForeColor {
+		get { return base.ForeColor; }
+		set {
+			base.ForeColor = value;
+			this.Invalidate();
+		}
+	}
+	[Category("Appearance")]
+	public Color ForeColorSelected {
+		get { return this._ForeColorSelected; }
+		set {
+			this._ForeColorSelected = value;
+			this.Invalidate();
+		}
+	}
+	[DisplayName("ButtonFont")]
+	public override System.Drawing.Font Font {
+		get { return base.Font; }
+		set {
+			base.Font = value;
+			this.Invalidate();
+		}
+	}
+	[Category("Appearance"), DisplayName("ButtonHovering1")]
+	public Color ButtonColorHoveringTop {
+		get { return this._ButtonColorHoveringTop; }
+		set {
+			this._ButtonColorHoveringTop = value;
+			this.Invalidate();
+		}
+	}
+	[Category("Appearance"), DisplayName("ButtonSelected1")]
+	public Color ButtonColorSelectedTop {
+		get { return this._ButtonColorSelectedTop; }
+		set {
+			this._ButtonColorSelectedTop = value;
+			this.Invalidate();
+		}
+	}
+	[Category("Appearance"), DisplayName("ButtonSelectedHovering1")]
+	public Color ButtonColorSelectedAndHoveringTop {
+		get { return this._ButtonColorSelectedAndHoveringTop; }
+		set {
+			this._ButtonColorSelectedAndHoveringTop = value;
+			this.Invalidate();
+		}
+	}
+	[Category("Appearance"), DisplayName("ButtonPassive1")]
+	public Color ButtonColorPassiveTop {
+		get { return this._ButtonColorPassiveTop; }
+		set {
+			this._ButtonColorPassiveTop = value;
+			this.Invalidate();
+		}
+	}
+	[Category("Appearance"), DisplayName("ButtonHovering2")]
+	public Color ButtonColorHoveringBottom {
+		get { return this._ButtonColorHoveringBottom; }
+		set {
+			this._ButtonColorHoveringBottom = value;
+			this.Invalidate();
+		}
+	}
+	[Category("Appearance"), DisplayName("ButtonSelected2")]
+	public Color ButtonColorSelectedBottom {
+		get { return this._ButtonColorSelectedBottom; }
+		set {
+			this._ButtonColorSelectedBottom = value;
+			this.Invalidate();
+		}
+	}
+	[Category("Appearance"), DisplayName("ButtonSelectedHovering2")]
+	public Color ButtonColorSelectedAndHoveringBottom {
+		get { return this._ButtonColorSelectedAndHoveringBottom; }
+		set {
+			this._ButtonColorSelectedAndHoveringBottom = value;
+			this.Invalidate();
+		}
+	}
+	[Category("Appearance"), DisplayName("ButtonPassive2")]
+	public Color ButtonColorPassiveBottom {
+		get { return this._ButtonColorPassiveBottom; }
+		set {
+			this._ButtonColorPassiveBottom = value;
+			this.Invalidate();
+		}
+	}
+
+	//
+
+	#endregion
+
+	#region " Control events "
+
+
+
+	private void OutlookBar_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+	{
+		_RightClickedButton = null;
+		OutlookBarButton mButton = this.Buttons.Item(e.X, e.Y);
+		if ((mButton != null)) {
+			switch (e.Button) {
+				case System.Windows.Forms.MouseButtons.Left:
+					this._SelectedButton = mButton;
+					if (ButtonClicked != null) {
+						ButtonClicked(this, new System.EventArgs());
+					}
+
+					this.Invalidate();
+					break;
+				case System.Windows.Forms.MouseButtons.Right:
+					this._RightClickedButton = mButton;
+					this.Invalidate();
+					break;
+			}
+		} else {
+			if (this.GetDropDownRectangle().Contains(e.X, e.Y)) {
+				this.CreateContextMenu();
+			}
+		}
+	}
+
+	private void OutlookBar_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+	{
+		IsResizing = GetGripRectangle().Contains(e.X, e.Y);
+	}
+
+	private void OutlookBar_MouseLeave(object sender, System.EventArgs e)
+	{
+		if (this._RightClickedButton == null) {
+			this._HoveringButton = null;
+			this._DropDownHovering = false;
+			this.Invalidate();
+		}
+	}
+
+	private void OutlookBar_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+	{
+		this._HoveringButton = null;
+		this._DropDownHovering = false;
+		if (IsResizing) {
+			if (e.Y < -GetButtonHeight()) {
+				if (CanGrow) {
+					this.Height += GetButtonHeight();
+				} else {
+					return;
+				}
+			} else if (e.Y > GetButtonHeight()) {
+				if (CanShrink) {
+					this.Height -= GetButtonHeight();
+				} else {
+					return;
+				}
+			}
+		} else {
+			if (this.GetGripRectangle().Contains(e.X, e.Y)) {
+				this.Cursor = Cursors.SizeNS;
+			} else if (GetDropDownRectangle().Contains(e.X, e.Y)) {
+				this.Cursor = Cursors.Hand;
+				this._DropDownHovering = true;
+				this.Invalidate();
+
+				//adjust Tooltip...
+				if ((oToolTip.Tag != null)) {
+					if (!oToolTip.Tag.Equals("Configure")) {
+						this.oToolTip.Active = true;
+						this.oToolTip.SetToolTip(this, "Configure buttons");
+						this.oToolTip.Tag = "Configure";
+					}
+				} else {
+					this.oToolTip.Active = true;
+					this.oToolTip.SetToolTip(this, "Configure buttons");
+					this.oToolTip.Tag = "Configure";
+				}
+
+			} else if ((this.Buttons.Item(e.X, e.Y) != null)) {
+				this.Cursor = Cursors.Hand;
+				this._HoveringButton = this.Buttons.Item(e.X, e.Y);
+				this.Invalidate();
+
+				//adjust tooltip...
+				if (!this.Buttons.Item(e.X, e.Y).isLarge) {
+					if (oToolTip.Tag == null) {
+						this.oToolTip.Active = true;
+						this.oToolTip.SetToolTip(this, this.Buttons.Item(e.X, e.Y).Text);
+						this.oToolTip.Tag = this.Buttons.Item(e.X, e.Y);
+					} else {
+						if (!oToolTip.Tag.Equals(this.Buttons.Item(e.X, e.Y))) {
+							this.oToolTip.Active = true;
+							this.oToolTip.SetToolTip(this, this.Buttons.Item(e.X, e.Y).Text);
+							this.oToolTip.Tag = this.Buttons.Item(e.X, e.Y);
+						}
+					}
+				} else {
+					this.oToolTip.Active = false;
+				}
+			} else {
+				this.Cursor = Cursors.Default;
+			}
+		}
+	}
+
+	private void OutlookBar_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+	{
+		this.IsResizing = false;
+		this._LeftClickedButton = null;
+	}
+
+	#endregion
+
+	#region " Graphics "
+
+	private int MaxLargeButtonCount;
+
+	private int MaxSmallButtonCount;
+
+	internal void OutlookBar_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+	{
+		MaxLargeButtonCount = Math.Floor((this.Height - GetBottomContainerRectangle().Height - GetGripRectangle().Height) / GetButtonHeight());
+		if (this.Buttons.CountVisible < MaxLargeButtonCount)
+			MaxLargeButtonCount = this.Buttons.CountVisible;
+
+		CanShrink = (MaxLargeButtonCount != 0);
+		CanGrow = (MaxLargeButtonCount < this.Buttons.CountVisible);
+
+		this.Height = (MaxLargeButtonCount * GetButtonHeight()) + GetGripRectangle().Height + GetBottomContainerRectangle().Height;
+
+		//Paint Grip...
+		this.PaintGripRectangle(e.Graphics);
+
+		//Paint Large Buttons...
+		int SyncLargeButtons = 0;
+		int IterateLargeButtons = 0;
+		for (IterateLargeButtons = 0; IterateLargeButtons <= this.Buttons.Count - 1; IterateLargeButtons++) {
+			if (this.Buttons(IterateLargeButtons).Visible) {
+				System.Drawing.Rectangle rec = new System.Drawing.Rectangle(0, (SyncLargeButtons * GetButtonHeight()) + GetGripRectangle().Height, this.Width, GetButtonHeight());
+				Buttons(IterateLargeButtons).Rectangle = rec;
+				Buttons(IterateLargeButtons).isLarge = true;
+				this.PaintButton(ref Buttons(IterateLargeButtons), e.Graphics, (MaxLargeButtonCount != SyncLargeButtons));
+				if (SyncLargeButtons == MaxLargeButtonCount)
+					break; // TODO: might not be correct. Was : Exit For
+				SyncLargeButtons += 1;
+			}
+		}
+
+		//Paint Small Buttons...
+		MaxSmallButtonCount = Math.Floor((this.Width - GetDropDownRectangle().Width - this.GetBottomContainerLeftMargin()) / GetSmallButtonWidth());
+		if ((this.Buttons.CountVisible - MaxLargeButtonCount) <= 0) {
+			MaxSmallButtonCount = 0;
+		}
+		if (MaxSmallButtonCount > (this.Buttons.CountVisible - MaxLargeButtonCount)) {
+			MaxSmallButtonCount = (this.Buttons.CountVisible - MaxLargeButtonCount);
+		}
+
+		int StartX = this.Width - GetDropDownRectangle().Width - (MaxSmallButtonCount * this.GetSmallButtonWidth());
+		int SyncSmallButtons = 0;
+		int IterateSmallButtons = 0;
+		for (IterateSmallButtons = IterateLargeButtons; IterateSmallButtons <= this.Buttons.Count - 1; IterateSmallButtons++) {
+			if (SyncSmallButtons == MaxSmallButtonCount)
+				break; // TODO: might not be correct. Was : Exit For
+			if (this.Buttons(IterateSmallButtons).Visible) {
+				System.Drawing.Rectangle rec = new System.Drawing.Rectangle(StartX + (SyncSmallButtons * GetSmallButtonWidth()), GetBottomContainerRectangle().Y, GetSmallButtonWidth(), GetBottomContainerRectangle().Height);
+				this.Buttons(IterateSmallButtons).Rectangle = rec;
+				this.Buttons(IterateSmallButtons).isLarge = false;
+				this.PaintButton(this.Buttons(IterateSmallButtons), e.Graphics);
+				SyncSmallButtons += 1;
+			}
+		}
+
+		for (int IterateMenuItems = IterateSmallButtons; IterateMenuItems <= this.Buttons.CountVisible - 1; IterateMenuItems++) {
+			this.Buttons(IterateMenuItems).Rectangle = null;
+		}
+
+		//Draw Empty Space...
+		Rectangle recEmptySpace = this.GetBottomContainerRectangle();
+		var _with1 = recEmptySpace;
+		_with1.Width = this.Width - (MaxSmallButtonCount * this.GetSmallButtonWidth()) - this.GetDropDownRectangle().Width;
+		this.FillButton(recEmptySpace, e.Graphics, ButtonState.Passive, true, true, false);
+
+		//Paint DropDown...
+		this.PaintDropDownRectangle(e.Graphics);
+
+		//Finally, paint the bottom line...
+		e.Graphics.DrawLine(new Pen(this.GetOutlookBarLineColor()), 0, this.Height - 1, this.Width - 1, this.Height - 1);
+	}
+
+	private void PaintButton(ref OutlookBarButton Button, Graphics graphics, bool IsLastLarge = false)
+	{
+		if (Button.Equals(_HoveringButton)) {
+			if (_LeftClickedButton == null) {
+				if (Button.Equals(this.SelectedButton)) {
+					FillButton(Button.Rectangle, graphics, ButtonState.Selected | ButtonState.Hovering, true, Button.isLarge, Button.isLarge);
+				} else {
+					this.FillButton(Button.Rectangle, graphics, ButtonState.Hovering, true, Button.isLarge, Button.isLarge);
+				}
+			} else {
+				this.FillButton(Button.Rectangle, graphics, ButtonState.Selected | ButtonState.Hovering, true, Button.isLarge, Button.isLarge);
+			}
+		} else {
+			if (Button.Equals(SelectedButton)) {
+				FillButton(Button.Rectangle, graphics, ButtonState.Selected, true, Button.isLarge, Button.isLarge);
+			} else {
+				FillButton(Button.Rectangle, graphics, ButtonState.Passive, true, Button.isLarge, Button.isLarge);
+			}
+		}
+
+		//Text and icons...
+		if (Button.isLarge & IsLastLarge == true) {
+			graphics.DrawString(Button.Text, this.GetButtonFont(), this.GetButtonTextBrush(Button.Equals(this.SelectedButton)), 10 + ImageDimension_Large + 8, Convert.ToSingle(Button.Rectangle.Y + ((GetButtonHeight() / 2) - (this.GetButtonFont().Height / 2))) + 2);
+		}
+		Rectangle recIma = new Rectangle();
+		switch (Button.isLarge) {
+			case true:
+				var _with2 = recIma;
+				_with2.Width = ImageDimension_Large;
+				_with2.Height = ImageDimension_Large;
+				_with2.X = 10;
+				_with2.Y = Button.Rectangle.Y + Math.Floor((GetButtonHeight() / 2) - (ImageDimension_Large / 2));
+				break;
+			case false:
+				var _with3 = recIma;
+				_with3.Width = ImageDimension_Small;
+				_with3.Height = ImageDimension_Small;
+				_with3.X = Button.Rectangle.X + Math.Floor((GetSmallButtonWidth() / 2) - (ImageDimension_Small / 2));
+				_with3.Y = Button.Rectangle.Y + Math.Floor((GetButtonHeight() / 2) - (ImageDimension_Small / 2));
+				break;
+		}
+		if (Button.isLarge & IsLastLarge == true)
+			graphics.DrawImage(Button.Image.ToBitmap, recIma);
+		if (Button.isLarge == false)
+			graphics.DrawImage(Button.Image.ToBitmap, recIma);
+
+	}
+
+	private void FillButton(Rectangle rectangle, Graphics graphics, ButtonState buttonState, bool DrawTopBorder, bool DrawLeftBorder, bool DrawRightBorder)
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				Brush aBrush = new LinearGradientBrush(rectangle, this.GetButtonColor(buttonState, 0), this.GetButtonColor(buttonState, 1), LinearGradientMode.Vertical);
+				graphics.FillRectangle(aBrush, rectangle);
+				aBrush.Dispose();
+				break;
+			case Renderer.Outlook2007:
+
+				//Filling the top part of the button...
+				Rectangle TopRectangle = rectangle;
+				Brush TopBrush = new LinearGradientBrush(TopRectangle, this.GetButtonColor(buttonState, 0), this.GetButtonColor(buttonState, 1), LinearGradientMode.Vertical);
+				TopRectangle.Height = (GetButtonHeight() * 15) / 32;
+				graphics.FillRectangle(TopBrush, TopRectangle);
+				TopBrush.Dispose();
+
+				//and the bottom part...
+				Rectangle BottomRectangle = rectangle;
+				Brush BottomBrush = new LinearGradientBrush(BottomRectangle, this.GetButtonColor(buttonState, 2), this.GetButtonColor(buttonState, 3), LinearGradientMode.Vertical);
+				BottomRectangle.Y += (GetButtonHeight() * 12) / 32;
+				BottomRectangle.Height -= (GetButtonHeight() * 12) / 32;
+				graphics.FillRectangle(BottomBrush, BottomRectangle);
+				BottomBrush.Dispose();
+				break;
+			case Renderer.Custom:
+				Brush aBrush = new LinearGradientBrush(rectangle, this.GetButtonColor(buttonState, 0), this.GetButtonColor(buttonState, 1), LinearGradientMode.Vertical);
+				graphics.FillRectangle(aBrush, rectangle);
+				aBrush.Dispose();
+				break;
+		}
+
+		//Draw Top Border...
+		if (DrawTopBorder)
+			graphics.DrawLine(new Pen(GetOutlookBarLineColor()), rectangle.X, rectangle.Y, rectangle.Width + rectangle.X, rectangle.Y);
+
+		//Draw Left Border...
+		if (DrawLeftBorder)
+			graphics.DrawLine(new Pen(GetOutlookBarLineColor()), rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height);
+
+		//Draw Right Border...
+		if (DrawRightBorder)
+			graphics.DrawLine(new Pen(GetOutlookBarLineColor()), rectangle.X + rectangle.Width - 1, rectangle.Y, rectangle.X + rectangle.Width - 1, rectangle.Y + rectangle.Height);
+
+	}
+
+
+	private void PaintGripRectangle(Graphics graphics)
+	{
+		//Paint the backcolor...
+		graphics.FillRectangle(this.GetGripBrush(), this.GetGripRectangle());
+
+		//Draw the icon...
+		Icon oIcon = this.GetGripIcon();
+		Rectangle RectangleIcon = new Rectangle(Convert.ToInt32((Convert.ToInt32(this.Width) / 2) - (Convert.ToInt32(oIcon.Width / 2))), ((Convert.ToInt32((GetGripRectangle().Height) / 2)) - Convert.ToInt32((oIcon.Height / 2))) + 1, oIcon.Width, oIcon.Height);
+		graphics.DrawIcon(oIcon, RectangleIcon);
+		graphics.DrawLine(new Pen(this.GetGripTopColor(), 1), 0, 0, this.Width, 0);
+		graphics.DrawLine(new Pen(this.GetOutlookBarLineColor(), 1), 0, 0, 0, GetGripRectangle().Height);
+		graphics.DrawLine(new Pen(this.GetOutlookBarLineColor(), 1), GetGripRectangle().Width - 1, 0, GetGripRectangle().Width - 1, this.GetGripRectangle().Height);
+		oIcon.Dispose();
+	}
+
+
+	private void PaintDropDownRectangle(Graphics graphics)
+	{
+		//Repaint the backcolor if the mouse is hovering...
+		switch (this._DropDownHovering) {
+			case true:
+				this.FillButton(this.GetDropDownRectangle(), graphics, ButtonState.Hovering, true, false, true);
+				break;
+			case false:
+				this.FillButton(this.GetDropDownRectangle(), graphics, ButtonState.Passive, true, false, true);
+				break;
+		}
+		//graphics.DrawRectangle(Pens.Red, Me.GetDropDownRectangle)
+
+		//Draw the icon...
+		Icon oIcon = this.GetDropDownIcon();
+		Rectangle RectangleIcon = new Rectangle((this.GetDropDownRectangle().X + ((this.GetDropDownRectangle().Width / 2) - (oIcon.Width / 2))), (this.GetDropDownRectangle().Y + (((this.GetDropDownRectangle().Height / 2) - (oIcon.Height / 2)) + 1)), oIcon.Width, oIcon.Height);
+		graphics.DrawIcon(oIcon, RectangleIcon);
+		oIcon.Dispose();
+
+	}
+
+
+	#endregion
+
+	#region " Renderer-dependent values "
+
+	private Color GetOutlookBarLineColor()
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				return Color.FromArgb(0, 45, 150);
+			case Renderer.Outlook2007:
+				return Color.FromArgb(101, 147, 207);
+			case Renderer.Custom:
+				return this.OutlookBarLineColor;
+		}
+	}
+
+	private Brush GetButtonTextBrush(bool isSelected)
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				return Brushes.Black;
+			case Renderer.Outlook2007:
+				switch (isSelected) {
+					case false:
+						return new SolidBrush(Color.FromArgb(32, 77, 137));
+					case true:
+						return Brushes.Black;
+				}
+				break;
+			case Renderer.Custom:
+				switch (isSelected) {
+					case false:
+						return new SolidBrush(this.ForeColor);
+					case true:
+						return new SolidBrush(this.ForeColorSelected);
+				}
+				break;
+		}
+		return null;
+	}
+	private Font GetButtonFont()
+	{
+		switch (this.Renderer) {
+			case Renderer.Custom:
+				return this.Font;
+			case Renderer.Outlook2003:
+				return new Font("Tahoma", 8.25f, FontStyle.Bold, GraphicsUnit.Point, 0);
+			case Renderer.Outlook2007:
+				return new Font("Tahoma", 8.25f, FontStyle.Bold, GraphicsUnit.Point, 0);
+		}
+		return null;
+	}
+	private Color GetButtonColor(ButtonState buttonState, int colorIndex)
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				switch (buttonState) {
+					case buttonState.Hovering | buttonState.Selected:
+						if (colorIndex == 0)
+							return Color.FromArgb(232, 127, 8);
+						if (colorIndex == 1)
+							return Color.FromArgb(247, 218, 124);
+						break;
+					case buttonState.Hovering:
+						if (colorIndex == 0)
+							return Color.FromArgb(255, 255, 220);
+						if (colorIndex == 1)
+							return Color.FromArgb(247, 192, 91);
+						break;
+					case buttonState.Selected:
+						if (colorIndex == 0)
+							return Color.FromArgb(247, 218, 124);
+						if (colorIndex == 1)
+							return Color.FromArgb(232, 127, 8);
+						break;
+					case buttonState.Passive:
+						if (colorIndex == 0)
+							return Color.FromArgb(203, 225, 252);
+						if (colorIndex == 1)
+							return Color.FromArgb(125, 166, 223);
+						break;
+				}
+				break;
+			case Renderer.Outlook2007:
+				switch (buttonState) {
+					case buttonState.Hovering | buttonState.Selected:
+						if (colorIndex == 0)
+							return Color.FromArgb(255, 189, 105);
+						if (colorIndex == 1)
+							return Color.FromArgb(255, 172, 66);
+						if (colorIndex == 2)
+							return Color.FromArgb(251, 140, 60);
+						if (colorIndex == 3)
+							return Color.FromArgb(254, 211, 101);
+						break;
+					case buttonState.Hovering:
+						if (colorIndex == 0)
+							return Color.FromArgb(255, 254, 228);
+						if (colorIndex == 1)
+							return Color.FromArgb(255, 232, 166);
+						if (colorIndex == 2)
+							return Color.FromArgb(255, 215, 103);
+						if (colorIndex == 3)
+							return Color.FromArgb(255, 230, 159);
+						break;
+					case buttonState.Selected:
+						if (colorIndex == 0)
+							return Color.FromArgb(255, 217, 170);
+						if (colorIndex == 1)
+							return Color.FromArgb(255, 187, 109);
+						if (colorIndex == 2)
+							return Color.FromArgb(255, 171, 63);
+						if (colorIndex == 3)
+							return Color.FromArgb(254, 225, 123);
+						break;
+					case buttonState.Passive:
+						if (colorIndex == 0)
+							return Color.FromArgb(227, 239, 255);
+						if (colorIndex == 1)
+							return Color.FromArgb(196, 221, 255);
+						if (colorIndex == 2)
+							return Color.FromArgb(173, 209, 255);
+						if (colorIndex == 3)
+							return Color.FromArgb(193, 219, 255);
+						break;
+				}
+				break;
+			case Renderer.Custom:
+				switch (buttonState) {
+					case buttonState.Hovering | buttonState.Selected:
+						if (colorIndex == 0)
+							return this.ButtonColorSelectedAndHoveringTop;
+						if (colorIndex == 1)
+							return this.ButtonColorSelectedAndHoveringBottom;
+						break;
+					case buttonState.Hovering:
+						if (colorIndex == 0)
+							return this.ButtonColorHoveringTop;
+						if (colorIndex == 1)
+							return this.ButtonColorHoveringBottom;
+						break;
+					case buttonState.Selected:
+						if (colorIndex == 0)
+							return this.ButtonColorSelectedTop;
+						if (colorIndex == 1)
+							return this.ButtonColorSelectedBottom;
+						break;
+					case buttonState.Passive:
+						if (colorIndex == 0)
+							return this.ButtonColorPassiveTop;
+						if (colorIndex == 1)
+							return this.ButtonColorPassiveBottom;
+						break;
+				}
+				break;
+		}
+	}
+	private int GetButtonHeight()
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				return 32;
+			case Renderer.Outlook2007:
+				return 32;
+			case Renderer.Custom:
+				return this.ButtonHeight;
+		}
+	}
+
+	private Rectangle GetBottomContainerRectangle()
+	{
+		return new Rectangle(0, this.Height - this.GetButtonHeight(), this.Width, this.GetButtonHeight());
+	}
+	private int GetBottomContainerLeftMargin()
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				return 15;
+			case Renderer.Outlook2007:
+				return 16;
+			case Renderer.Custom:
+				return 16;
+		}
+	}
+
+	private int GetSmallButtonWidth()
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				return 22;
+			case Renderer.Outlook2007:
+				return 26;
+			case Renderer.Custom:
+				return 25;
+		}
+	}
+
+	private Brush GetGripBrush()
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				return new LinearGradientBrush(this.GetGripRectangle(), Color.FromArgb(89, 135, 214), Color.FromArgb(0, 45, 150), LinearGradientMode.Vertical);
+			case Renderer.Outlook2007:
+				return new LinearGradientBrush(this.GetGripRectangle(), Color.FromArgb(227, 239, 255), Color.FromArgb(179, 212, 255), LinearGradientMode.Vertical);
+			case Renderer.Custom:
+				return new LinearGradientBrush(this.GetGripRectangle(), this.ButtonColorPassiveTop, this.ButtonColorPassiveBottom, LinearGradientMode.Vertical);
+		}
+		return null;
+	}
+	private Rectangle GetGripRectangle()
+	{
+		int Height = 0;
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				Height = 6;
+				break;
+			case Renderer.Outlook2007:
+				Height = 8;
+				break;
+			case Renderer.Custom:
+				Height = 8;
+				break;
+		}
+		return new Rectangle(0, 0, this.Width, Height);
+	}
+	private Icon GetGripIcon()
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				return My.Resources.Grip2003;
+			case Renderer.Outlook2007:
+				return My.Resources.Grip2007;
+			case Renderer.Custom:
+				return My.Resources.Grip2007;
+		}
+		return null;
+	}
+	private Color GetGripTopColor()
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				return Color.Transparent;
+			case Renderer.Outlook2007:
+				return GetOutlookBarLineColor();
+			case Renderer.Custom:
+				return Color.Transparent;
+		}
+	}
+
+	private Rectangle GetDropDownRectangle()
+	{
+		return new Rectangle((this.Width - GetSmallButtonWidth()), (this.Height - GetButtonHeight()), GetSmallButtonWidth(), GetButtonHeight());
+	}
+	private Icon GetDropDownIcon()
+	{
+		switch (this.Renderer) {
+			case Renderer.Outlook2003:
+				return My.Resources.DropDown2003;
+			case Renderer.Outlook2007:
+				return My.Resources.DropDown2007;
+			case Renderer.Custom:
+				return My.Resources.DropDown2007;
+		}
+		return null;
+	}
+
+	#endregion
+
+	#region " MenuItems and Options "
+
+	private void CreateContextMenu()
+	{
+		this.oContextMenuStrip = new ContextMenuStrip();
+		this.oContextMenuStrip.Items.Add("Show &More Buttons", My.Resources.Arrow_Up.ToBitmap, ShowMoreButtons);
+		this.oContextMenuStrip.Items.Add("Show Fe&wer Buttons", My.Resources.Arrow_Down.ToBitmap, ShowFewerButtons);
+		if (this.MaxLargeButtonCount >= this.Buttons.CountVisible)
+			this.oContextMenuStrip.Items[0].Enabled = false;
+		if (this.MaxLargeButtonCount == 0)
+			this.oContextMenuStrip.Items[1].Enabled = false;
+		this.oContextMenuStrip.Items.Add("Na&vigation Pane Options...", null, NavigationPaneOptions);
+		ToolStripMenuItem mnuAdd = new ToolStripMenuItem("&Add or Remove Buttons", null);
+		this.oContextMenuStrip.Items.Add(mnuAdd);
+		foreach (OutlookBarButton oButton in this.Buttons) {
+			if (oButton.Allowed) {
+				ToolStripMenuItem mnuA = new ToolStripMenuItem();
+				var _with4 = mnuA;
+				_with4.Text = oButton.Text;
+				_with4.Image = oButton.Image.ToBitmap;
+				_with4.CheckOnClick = true;
+				_with4.Checked = oButton.Visible;
+				_with4.Tag = oButton;
+				mnuA.Click += ToggleVisible;
+				mnuAdd.DropDownItems.Add(mnuA);
+			}
+		}
+		int c = 0;
+		foreach (OutlookBarButton oButton in this.Buttons) {
+			if (oButton.Visible) {
+				if (oButton.Rectangle == null)
+					c += 1;
+			}
+		}
+		if (c > 0)
+			this.oContextMenuStrip.Items.Add(new ToolStripSeparator());
+		foreach (OutlookBarButton oButton in this.Buttons) {
+			if (oButton.Rectangle == null) {
+				if (oButton.Visible) {
+					ToolStripMenuItem mnu = new ToolStripMenuItem();
+					var _with5 = mnu;
+					_with5.Text = oButton.Text;
+					_with5.Image = oButton.Image.ToBitmap;
+					_with5.Tag = oButton;
+					_with5.CheckOnClick = true;
+					if ((this.SelectedButton != null)) {
+						if (this.SelectedButton.Equals(oButton))
+							_with5.Checked = true;
+					}
+					mnu.Click += MnuClicked;
+					this.oContextMenuStrip.Items.Add(mnu);
+				}
+			}
+		}
+		this.oContextMenuStrip.Show(this, new Point(this.Width, this.Height - (GetButtonHeight() / 2)));
+	}
+	private void ShowMoreButtons(object sender, System.EventArgs e)
+	{
+		this.Height += GetButtonHeight();
+	}
+	private void ShowFewerButtons(object sender, System.EventArgs e)
+	{
+		this.Height -= GetButtonHeight();
+	}
+	private void NavigationPaneOptions(object sender, System.EventArgs e)
+	{
+		this._RightClickedButton = null;
+		this._HoveringButton = null;
+		this.Invalidate();
+		frm_NavigationPaneOptions frm = new frm_NavigationPaneOptions(this.Buttons);
+		frm.ShowDialog();
+		this.Invalidate();
+	}
+	private void ToggleVisible(object sender, System.EventArgs e)
+	{
+		OutlookBarButton oButton = (OutlookBarButton)((ToolStripMenuItem)sender).Tag;
+		oButton.Visible = !oButton.Visible;
+		this.Invalidate();
+	}
+	private void MnuClicked(object sender, System.EventArgs e)
+	{
+		OutlookBarButton oButton = (OutlookBarButton)((ToolStripMenuItem)sender).Tag;
+		this._SelectedButton = oButton;
+		if (ButtonClicked != null) {
+			ButtonClicked(this, new System.EventArgs());
+		}
+	}
+
+	#endregion
+
+}
+
+internal enum ButtonState
+{
+	Passive,
+	Hovering,
+	Selected
+}
+
+public enum Renderer
+{
+	Outlook2003,
+	Outlook2007,
+	Custom
+}
